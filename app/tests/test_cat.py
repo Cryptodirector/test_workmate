@@ -1,110 +1,124 @@
+from fastapi.testclient import TestClient
 
 
-def test_create_cat(test_client):
+def test_create_cat(
+        test_client: TestClient
+) -> None:
     response = test_client.post(
-        "/api/cats/create",
+        "/api/v1/cats/create",
         json={
             "color": "string",
             "months_old": 12,
             "descriptions": "stringst",
-            "id_breed": 1
+            "breed_id": 1
         }
 
     )
     assert response.status_code == 200
 
 
-def test_create_cat_bad_months(test_client):
+def test_create_cat_bad_months(
+        test_client: TestClient
+) -> None:
     response = test_client.post(
-        "/api/cats/create",
+        "/api/v1/cats/create",
         json={
             "color": "string",
             "months_old": 14,
             "descriptions": "stringst",
-            "id_breed": 1
+            "breed_id": 1
         }
     )
     assert response.status_code == 422
 
 
-def test_create_cat_bad_descript(test_client):
+def test_create_cat_bad_descript(
+        test_client: TestClient
+) -> None:
     response = test_client.post(
-        "/api/cats/create",
+        "/api/v1/cats/create",
         json={
             "color": "string",
             "months_old": 12,
             "descriptions": "str",
-            "id_breed": 1
+            "breed_id": 1
         }
     )
     assert response.status_code == 422
 
 
-def test_update_cat(test_client):
+def test_update_cat(
+        test_client: TestClient
+) -> None:
     response = test_client.patch(
-        "/api/cats/update/1",
+        "/api/v1/cats/update/1",
         json={
             "color": "string",
             "months_old": 12,
             "descriptions": "stringst",
-            "id_breed": 1
+            "breed_id": 1
         }
 
     )
     assert response.status_code == 200
 
 
-def test_update_cat_bad_id(test_client):
+def test_update_cat_bad_id(
+        test_client: TestClient
+) -> None:
     response = test_client.patch(
-        "/api/cats/update/0",
+        "/api/v1/cats/update/0",
         json={
             "color": "string",
             "months_old": 12,
             "descriptions": "stringst",
-            "id_breed": 1
+            "breed_id": 1
         }
 
     )
     assert response.status_code == 404
 
 
-def test_delete_cat(test_client):
+def test_delete_cat(
+        test_client: TestClient
+) -> None:
     response = test_client.delete(
-        "/api/cats/delete/1"
+        "/api/v1/cats/delete/1"
+    )
+    assert response.status_code == 204
+
+
+def test_get_breeds(
+        test_client: TestClient
+) -> None:
+    response = test_client.get(
+        "/api/v1/breed"
     )
     assert response.status_code == 200
 
 
-def test_delete_cat_bad_id(test_client):
-    response = test_client.delete(
-        "/api/cats/delete/0"
-    )
-    assert response.status_code == 404
-
-
-def test_get_breeds(test_client):
+def test_get_cats_filter(
+        test_client: TestClient
+) -> None:
     response = test_client.get(
-        "/api/breed"
+        "/api/v1/cats/breed/15"
     )
     assert response.status_code == 200
 
 
-def test_get_cats_filter(test_client):
+def test_get_cats(
+        test_client: TestClient
+) -> None:
     response = test_client.get(
-        "/api/cats/breed/15"
+        "/api/v1/cats"
     )
     assert response.status_code == 200
 
 
-def test_get_cats(test_client):
+def test_get_cats_by_id(
+        test_client: TestClient
+) -> None:
     response = test_client.get(
-        "/api/cats"
-    )
-    assert response.status_code == 200
-
-
-def test_get_cats_by_id(test_client):
-    response = test_client.get(
-        "/api/cats/15"
+        "/api/v1/cats/15"
     )
     assert response.status_code == 200

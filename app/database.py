@@ -1,27 +1,25 @@
-import os
-
 from dotenv import load_dotenv, find_dotenv
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+    async_sessionmaker
+)
+from sqlalchemy.orm import DeclarativeBase
 from app.config import settings
 
 load_dotenv(find_dotenv())
 
-MODE = os.getenv('MODE')
-
-
-DATABASE_URL = settings.database_url
-
-engine = create_async_engine(DATABASE_URL)
-
 
 DATABASE_URL = settings.database_url
 
 
-async_session_maker = sessionmaker(
-    bind=engine,
+async_engine = create_async_engine(DATABASE_URL)
+
+async_session_maker = async_sessionmaker(
+    bind=async_engine,
     class_=AsyncSession,
+    autoflush=False,
     expire_on_commit=False
 )
 

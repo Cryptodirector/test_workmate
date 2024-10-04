@@ -1,16 +1,15 @@
 import asyncio
 from bs4 import BeautifulSoup as bs
 from aiohttp import ClientSession
-from typing import AsyncGenerator, Any
+from typing import AsyncGenerator
 
 from sqlalchemy import insert
 from app.database import async_session_maker
-from app.models.cat_model import Breed
+from app.models.v1.cat_model import Breed
 
 
 class Parser:
     url = 'https://www.purina.ru/find-a-pet/cat-breeds'
-    lst_breed = []
 
     @classmethod
     async def pars_site(
@@ -30,13 +29,12 @@ class Parser:
                     )
                     for card in cards:
                         title = card.find('a')
-                        cls.lst_breed.append(title.text.strip())
                         yield title.text.strip()
 
     @classmethod
     async def save_breed(
             cls,
-    ) -> Any:
+    ) -> None:
         async with async_session_maker() as session:
             async for title in cls.pars_site():
                 await session.execute(
@@ -45,7 +43,7 @@ class Parser:
             await session.commit()
 
 
-async def main():
+async def main() -> None:
     async with asyncio.TaskGroup() as tg:
         tg.create_task(Parser.save_breed())
 

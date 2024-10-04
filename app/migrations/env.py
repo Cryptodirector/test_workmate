@@ -8,8 +8,7 @@ from os.path import abspath, dirname
 from alembic import context
 from app.config import settings
 from app.database import Base
-from app.models.cat_model import Cats, Breed
-
+from app.models.v1.cat_model import Breed, Cat
 
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 

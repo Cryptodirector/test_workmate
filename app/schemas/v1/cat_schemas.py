@@ -1,8 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Annotated
+from typing import Annotated
+
+from app.schemas.v1.breed_schema import BreedDTO
 
 
-class CatPost(BaseModel):
+class CreateCatSchema(BaseModel):
     color: str
     months_old: int = Field(
         le=12,
@@ -12,32 +14,30 @@ class CatPost(BaseModel):
         min_length=8,
         max_length=1000
     )
-    id_breed: int
+    breed_id: int
 
 
-class CatUpdate(BaseModel):
-    color: Optional[str] = None
+class CatUpdateSchema(BaseModel):
+    color: str | None = None
     months_old: Annotated[
-        int, Field(
+        int,
+        Field(
             le=12,
             ge=0
-        )
-    ] = None
+        ),
+        None
+    ]
     descriptions: Annotated[
         str,
         Field(
             min_length=8,
             max_length=1000
-        )
-    ] = None
-    id_breed: Optional[int] = None
+        ),
+        None
+    ]
+    breed_id: int | None = None
 
 
-class BreedDTO(BaseModel):
-    id: int
-    title: str
-
-
-class CatsDTO(CatPost):
+class CatDTO(CreateCatSchema):
     id: int
     breed: 'BreedDTO'
