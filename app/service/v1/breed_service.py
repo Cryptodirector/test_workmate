@@ -16,9 +16,9 @@ class BreedService:
 
     @staticmethod
     async def get_breed(
-        session: AsyncSession,
-        skip: int = 0,
-        limit: int = 10
+            session: AsyncSession,
+            skip: int = 0,
+            limit: int = 10
     ) -> List[BreedDTO]:
         res = await session.execute(
             select(Breed).limit(limit).offset(skip)
@@ -31,10 +31,10 @@ class BreedService:
 
     @staticmethod
     async def get_cats_filter(
-        id: int,
-        session: AsyncSession,
-        skip: int = 0,
-        limit: int = 10
+            id: int,
+            session: AsyncSession,
+            skip: int = 0,
+            limit: int = 10
     ) -> List[CatDTO]:
         res = await session.execute(
             select(Cat).options(
