@@ -1,14 +1,14 @@
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
 
-def test_create_cat(
-        test_client: TestClient
+async def test_create_cat(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.post(
+    response = await ac.post(
         "/api/v1/cats/create",
         json={
             "color": "string",
-            "months_old": 12,
+            "birthdate": "2024-10-05",
             "descriptions": "stringst",
             "breed_id": 1
         }
@@ -17,10 +17,10 @@ def test_create_cat(
     assert response.status_code == 200
 
 
-def test_create_cat_bad_months(
-        test_client: TestClient
+async def test_create_cat_bad_months(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.post(
+    response = await ac.post(
         "/api/v1/cats/create",
         json={
             "color": "string",
@@ -32,10 +32,10 @@ def test_create_cat_bad_months(
     assert response.status_code == 422
 
 
-def test_create_cat_bad_descript(
-        test_client: TestClient
+async def test_create_cat_bad_descript(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.post(
+    response = await ac.post(
         "/api/v1/cats/create",
         json={
             "color": "string",
@@ -47,10 +47,10 @@ def test_create_cat_bad_descript(
     assert response.status_code == 422
 
 
-def test_update_cat(
-        test_client: TestClient
+async def test_update_cat(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.patch(
+    response = await ac.patch(
         "/api/v1/cats/update/1",
         json={
             "color": "string",
@@ -63,10 +63,10 @@ def test_update_cat(
     assert response.status_code == 200
 
 
-def test_update_cat_bad_id(
-        test_client: TestClient
+async def test_update_cat_bad_id(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.patch(
+    response = await ac.patch(
         "/api/v1/cats/update/0",
         json={
             "color": "string",
@@ -79,46 +79,46 @@ def test_update_cat_bad_id(
     assert response.status_code == 404
 
 
-def test_delete_cat(
-        test_client: TestClient
+async def test_get_breeds(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.delete(
-        "/api/v1/cats/delete/1"
-    )
-    assert response.status_code == 204
-
-
-def test_get_breeds(
-        test_client: TestClient
-) -> None:
-    response = test_client.get(
+    response = await ac.get(
         "/api/v1/breed"
     )
     assert response.status_code == 200
 
 
-def test_get_cats_filter(
-        test_client: TestClient
+async def test_get_cats_filter(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.get(
-        "/api/v1/cats/breed/15"
+    response = await ac.get(
+        "/api/v1/cats/breed/1"
     )
     assert response.status_code == 200
 
 
-def test_get_cats(
-        test_client: TestClient
+async def test_get_cats(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.get(
+    response = await ac.get(
         "/api/v1/cats"
     )
     assert response.status_code == 200
 
 
-def test_get_cats_by_id(
-        test_client: TestClient
+async def test_get_cats_by_id(
+        ac: AsyncClient
 ) -> None:
-    response = test_client.get(
-        "/api/v1/cats/15"
+    response = await ac.get(
+        "/api/v1/cats/1"
     )
     assert response.status_code == 200
+
+
+async def test_delete_cat(
+        ac: AsyncClient
+) -> None:
+    response = await ac.delete(
+        "/api/v1/cats/delete/1"
+    )
+    assert response.status_code == 204

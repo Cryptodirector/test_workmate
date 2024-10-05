@@ -4,20 +4,25 @@ from starlette.status import (
     HTTP_204_NO_CONTENT
 )
 from sqlalchemy import (
-    select,
+    extract,
+    func,
     insert,
     update,
-    delete
+    delete,
+    select
 )
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
-from typing import List
-from app.models.v1.cat_model import Cat
+
 from app.schemas.v1.cat_schemas import (
     CreateCatSchema,
     CatUpdateSchema,
     CatDTO
 )
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
+from app.models.v1.cat_model import Cat, Breed
+
+from app.schemas.v1.breed_schema import BreedDTO
 
 
 class CatService:
@@ -74,16 +79,38 @@ class CatService:
         skip: int = 0,
         limit: int = 10,
     ) -> List[CatDTO]:
+        months_column = (
+                (extract('year', func.now()) - extract('year', Cat.birthdate)
+                 ) * 12).label('months_old')
+
         res = await session.execute(
-            select(Cat).options(
-                joinedload(Cat.breed)
-            ).limit(limit).offset(skip)
+            select(
+                Cat.id,
+                Cat.color,
+                Cat.birthdate,
+                Cat.descriptions,
+                Cat.breed_id,
+                Breed.id.label('breed_id'),
+                Breed.title.label('breed_title'),
+                months_column
+            )
+            .join(Breed, Breed.id == Cat.breed_id)
+            .limit(limit)
+            .offset(skip)
         )
 
-        model = res.scalars().all()
+        model = res.mappings().all()
 
         return [
-            CatDTO.model_validate(row, from_attributes=True) for row in model
+            CatDTO(
+                id=row["id"],
+                color=row["color"],
+                birthdate=row["birthdate"],
+                descriptions=row["descriptions"],
+                breed=BreedDTO(id=row["breed_id"], title=row["breed_title"]),
+                months_old=row["months_old"],
+                breed_id=row["breed_id"]
+            ) for row in model
         ]
 
     @staticmethod
@@ -91,14 +118,35 @@ class CatService:
         id: int,
         session: AsyncSession
     ) -> List[CatDTO]:
+        months_column = (
+                (extract('year', func.now()) - extract('year', Cat.birthdate)
+                 ) * 12).label('months_old')
+
         res = await session.execute(
-            select(Cat).options(
-                joinedload(Cat.breed)
-            ).where(Cat.id == id)
+            select(
+                Cat.id,
+                Cat.color,
+                Cat.birthdate,
+                Cat.descriptions,
+                Cat.breed_id,
+                Breed.id.label('breed_id'),
+                Breed.title.label('breed_title'),
+                months_column
+            )
+            .join(Breed, Breed.id == Cat.breed_id)
+            .where(Cat.id == id)
         )
 
-        model = res.scalars().all()
+        model = res.mappings().all()
 
         return [
-            CatDTO.model_validate(row, from_attributes=True) for row in model
+            CatDTO(
+                id=row["id"],
+                color=row["color"],
+                birthdate=row["birthdate"],
+                descriptions=row["descriptions"],
+                breed=BreedDTO(id=row["breed_id"], title=row["breed_title"]),
+                months_old=row["months_old"],
+                breed_id=row["breed_id"]
+            ) for row in model
         ]

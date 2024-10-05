@@ -1,6 +1,7 @@
 from app.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Date
+import datetime
 
 
 class Cat(Base):
@@ -8,7 +9,10 @@ class Cat(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     color: Mapped[str] = mapped_column(nullable=False)
-    months_old: Mapped[int] = mapped_column(nullable=False)
+    birthdate: Mapped[datetime.date] = mapped_column(
+        Date,
+        nullable=False
+    )
     descriptions: Mapped[str] = mapped_column(nullable=False)
     breed_id: Mapped[int] = mapped_column(ForeignKey(
         'breed.id',
